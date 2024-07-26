@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.scss";
 
 function App() {
   const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log("The frontend app is running");
+    fetch("http://localhost:7000/api/getTodos")
+      .then((res) => res.json())
+      .then((data) => console.log(`Data : ${data.message}`))
+      .catch((err) => console.log(`Error : ${err}`));
+  }, []);
 
   return (
     <>
