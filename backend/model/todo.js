@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 const todoSchema = mongoose.Schema({
-  id: { type: mongoose.Schema.Types.ObjectId, required: true },
+  id: { type: mongoose.Schema.Types.ObjectId },
   title: { type: String },
   description: { type: String },
   completed: { type: Boolean },
-  createdDate: { type: Date },
-  updatedDate: { type: Date },
+  createdDate: { type: String, default: `${Date.now()}` },
+  updatedDate: { type: String },
   authorId: { type: Number },
 });
 
