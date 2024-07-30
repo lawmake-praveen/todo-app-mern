@@ -3,6 +3,7 @@ import "./App.scss";
 
 function App() {
   const [count, setCount] = useState("");
+  const [todos, setTodos] = useState([]);
   const [form, setForm] = useState({
     title: "",
     desc: "",
@@ -10,15 +11,16 @@ function App() {
   });
 
   useEffect(() => {
-    const getTodos = async () => {
-      console.log("The frontend app is running");
-      fetch("http://localhost:7000/api/getTodos")
-        .then((res) => res.json())
-        .then((data) => setCount(data.message))
-        .catch((err) => console.log(`Error : ${err}`));
-    };
     getTodos();
   }, []);
+
+  const getTodos = async () => {
+    console.log("The frontend app is running");
+    fetch("http://localhost:7000/api/getTodos")
+      .then((res) => res.json())
+      .then((data) => setTodos(data))
+      .catch((err) => console.log(`Error : ${err}`));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,9 +28,7 @@ function App() {
       title: form.title,
       description: form.desc,
       completed: form.completed,
-      createdDate: new Date().toLocaleString(),
-      updatedDate: "2024-07-26T10:15:30.000Z",
-      authorId: 1,
+      authorId: Math.ceil(Math.random()),
     };
 
     console.log(`Getting clicked ${JSON.stringify(todo)}`);
@@ -36,13 +36,25 @@ function App() {
     await fetch("http://localhost:7000/api/createTodo", {
       method: "POST",
       body: JSON.stringify(todo),
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
       .then((res) => res.json())
       .then((data) => {
         console.log(`${JSON.stringify(data)}`);
-        setCount(data.title);
+        // setCount(data.title);
       })
       .catch((err) => console.log(`Error : ${err}`));
+    await getTodos();
+  };
+
+  const handleDelete = async (id) => {
+    await fetch(`http://localhost:7000/api/deleteTodo/${id}`)
+      .then((res) => res.json())
+      .then((data) => console.log(`Data : ${data}`))
+      .catch((err) => console.log(`Could not delete todo : ${err}`));
+    await getTodos();
   };
 
   return (
@@ -89,12 +101,19 @@ function App() {
         <input type="submit" value="Submit" />
       </form>
 
-      <div>
-        {form.title}
-        <br />
-        {form.desc}
-        <br />
-        {form.completed ? "Completed" : "Pending"}
+      <div className="todo-container">
+        {todos.map((todo, index) => {
+          return (
+            <div className="todo">
+              <div>
+                <p>{todo.title}</p>{" "}
+                <input type="button" value="Delete" onClick={() => handleDelete(todo.id)} />
+              </div>
+              <p>{todo.description}</p>
+              <p>{todo.completed ? "Completed" : "Pending"}</p>
+            </div>
+          );
+        })}
       </div>
       <button onClick={() => setCount(count + 1)} className="button">
         Increase

@@ -15,14 +15,46 @@ const MongoURL = process.env.MONGOURL;
 app.use(express.json());
 app.use(cors());
 
+const todos = [
+  {
+    id: 0,
+    title: "First todo",
+    description:
+      "First todo Description First todo Description First todo Description First todo Description First todo Description First todo Description ",
+    completed: true,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    authorId: 1,
+  },
+  {
+    id: 1,
+    title: "Second todo",
+    description:
+      "Second todo Description Second todo Description Second todo Description Second todo Description Second todo Description Second todo Description ",
+    completed: false,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    authorId: 2,
+  },
+  {
+    id: 2,
+    title: "Third todo",
+    description:
+      "Third todo Description Third todo Description Third todo Description Third todo Description Third todo Description Third todo Description ",
+    completed: false,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    authorId: 3,
+  },
+];
+
 app.get("/", (req, res) => {
   console.log(`=== ${req}`);
   res.status(200).send(`HI this application is running in ${port}`);
 });
 
 app.get("/api/getTodos", async (req, res) => {
-  var data = await Todo.find();
-  res.status(200).send({ message: "The users list is sent" });
+  res.status(200).send(todos);
 });
 
 app.post("/api/createTodo", async (req, res) => {
@@ -30,26 +62,43 @@ app.post("/api/createTodo", async (req, res) => {
 
   try {
     console.log(`body : ${JSON.stringify(body)}`);
-    const newTodo = new Todo({
-      title: `${body.title}`,
-      description: `${body.title}`,
-      completed: `body.completed`,
-      createdDate: body.createdDate,
-      updatedDate: body.updatedDate,
-      authorId: body.authorId,
-    });
-    console.log(`todo : ${newTodo}`);
-    const savedTodo = await newTodo.save();
-    console.log(`result : ${savedTodo}`);
-    res.json(savedTodo);
+    // const newTodo = new Todo({
+    //   title: `${body.title}`,
+    //   description: `${body.title}`,
+    //   completed: `body.completed`,
+    //   createdDate: body.createdDate,
+    //   updatedDate: body.updatedDate,
+    //   authorId: body.authorId,
+    // });
+    // console.log(`todo : ${newTodo}`);
+    // const savedTodo = await newTodo.save();
+    // console.log(`result : ${savedTodo}`);
+    
+    var todo = {
+      ...req.body,
+      id: Math.random() * 20000,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+
+    console.log(`New Todo : : ${JSON.stringify(todo)}`);
+    todos.push(todo);
+
+    res.status(200).json(todo);
   } catch (error) {
     console.log(`Could not create todo : ${error}`);
     res.status(500).json({ message: "Something went wrong. Please try again" });
   }
 });
 
+app.delete("/api/deleteTodo/:id", async (req, res) => {
+  const todo = todos.find(todo => todo.id === req.params.id)
+  console.log(`todo : ${todo}`)
+  res.status(200).send(todo)
+})
+
 app.listen(port, async () => {
   console.log(`Port is running in ${port}`);
-  console.log(`connecting DB : ${MongoURL}`);
-  await connectDatabase();
+  // console.log(`connecting DB : ${MongoURL}`);
+  // await connectDatabase();
 });
