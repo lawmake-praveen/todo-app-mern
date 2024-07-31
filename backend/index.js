@@ -57,6 +57,15 @@ app.get("/api/getTodos", async (req, res) => {
   res.status(200).send(todos);
 });
 
+app.delete("/api/deleteTodo", (req, res) => {
+  const id = req.params.id;
+  console.log(`id : ${id}`);
+
+  const todo = todos.find((todo) => todo.id == id);
+  console.log(`todo : ${todo}`);
+  res.status(200).send(todo);
+});
+
 app.post("/api/createTodo", async (req, res) => {
   var body = req.body;
 
@@ -73,7 +82,7 @@ app.post("/api/createTodo", async (req, res) => {
     // console.log(`todo : ${newTodo}`);
     // const savedTodo = await newTodo.save();
     // console.log(`result : ${savedTodo}`);
-    
+
     var todo = {
       ...req.body,
       id: Math.random() * 20000,
@@ -90,12 +99,6 @@ app.post("/api/createTodo", async (req, res) => {
     res.status(500).json({ message: "Something went wrong. Please try again" });
   }
 });
-
-app.delete("/api/deleteTodo/:id", async (req, res) => {
-  const todo = todos.find(todo => todo.id === req.params.id)
-  console.log(`todo : ${todo}`)
-  res.status(200).send(todo)
-})
 
 app.listen(port, async () => {
   console.log(`Port is running in ${port}`);

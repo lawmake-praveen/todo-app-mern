@@ -50,8 +50,8 @@ function App() {
   };
 
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:7000/api/deleteTodo/${id}`)
-      .then((res) => res.json())
+    await fetch(`http://localhost:7000/api/deleteTodo`)
+      .then((res) => console.log(res))
       .then((data) => console.log(`Data : ${data}`))
       .catch((err) => console.log(`Could not delete todo : ${err}`));
     await getTodos();
@@ -104,10 +104,14 @@ function App() {
       <div className="todo-container">
         {todos.map((todo, index) => {
           return (
-            <div className="todo">
+            <div className="todo" key={index}>
               <div>
                 <p>{todo.title}</p>{" "}
-                <input type="button" value="Delete" onClick={() => handleDelete(todo.id)} />
+                <input
+                  type="button"
+                  value="Delete"
+                  onClick={() => handleDelete(todo.id)}
+                />
               </div>
               <p>{todo.description}</p>
               <p>{todo.completed ? "Completed" : "Pending"}</p>
