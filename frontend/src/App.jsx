@@ -50,10 +50,32 @@ function App() {
   };
 
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:7000/api/deleteTodo`)
-      .then((res) => console.log(res))
-      .then((data) => console.log(`Data : ${data}`))
+    await fetch(`http://localhost:7000/api/deleteTodo/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(`Data : ${JSON.stringify(data.todo)}`))
       .catch((err) => console.log(`Could not delete todo : ${err}`));
+    await getTodos();
+  };
+
+  const handleUpdate = async (id) => {
+    const todo = {
+      title: form.title,
+      description: form.desc,
+      completed: form.completed,
+      updatedAt: Date.now(),
+    };
+    console.log(`sent payload : ${JSON.stringify(todo)}`);
+    await fetch(`http://localhost:7000/api/updateTodo/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(todo),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(`data : ${JSON.stringify(data)}`));
     await getTodos();
   };
 
@@ -111,6 +133,11 @@ function App() {
                   type="button"
                   value="Delete"
                   onClick={() => handleDelete(todo.id)}
+                />
+                <input
+                  type="button"
+                  value="Update"
+                  onClick={() => handleUpdate(todo.id)}
                 />
               </div>
               <p>{todo.description}</p>

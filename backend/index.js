@@ -57,13 +57,14 @@ app.get("/api/getTodos", async (req, res) => {
   res.status(200).send(todos);
 });
 
-app.delete("/api/deleteTodo", (req, res) => {
+app.delete("/api/deleteTodo/:id", (req, res) => {
   const id = req.params.id;
   console.log(`id : ${id}`);
 
-  const todo = todos.find((todo) => todo.id == id);
+  const todo = todos.findIndex((todo) => todo.id == id);
+  todos.splice(todo, 1);
   console.log(`todo : ${todo}`);
-  res.status(200).send(todo);
+  res.status(200).send({ message: "Todo deleted successfully", todo: todo });
 });
 
 app.post("/api/createTodo", async (req, res) => {
@@ -97,6 +98,19 @@ app.post("/api/createTodo", async (req, res) => {
   } catch (error) {
     console.log(`Could not create todo : ${error}`);
     res.status(500).json({ message: "Something went wrong. Please try again" });
+  }
+});
+
+app.put("/api/updateTodo/:id", async (req, res) => {
+  let id = req.params.id;
+  let body = req.body;
+  console.log(`required param id : ${id}`);
+  console.log(`required body : ${JSON.stringify(body)}`);
+  const index = todos.findIndex((item) => item.id == id);
+  console.log(`selected item : ${JSON.stringify(todos[index])}`)
+  if (index !== -1) {
+    todos[index] = {...todos[index], ...body};
+    res.status(200).send(body);
   }
 });
 
