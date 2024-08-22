@@ -3,14 +3,17 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
 import Todo from "./model/todo.js";
 import { connectDatabase } from "./config/db.js";
+import User from "./model/user.js";
 
 const app = express();
 dotenv.config();
 
 const port = process.env.PORT || 5000;
 const MongoURL = process.env.MONGOURL;
+// const client = new MongoClient(MongoURL);
 
 app.use(express.json());
 app.use(cors());
@@ -50,10 +53,13 @@ const todos = [
 
 app.get("/", (req, res) => {
   console.log(`=== ${req}`);
+  
   res.status(200).send(`HI this application is running in ${port}`);
 });
 
 app.get("/api/getTodos", async (req, res) => {
+  const users = mongoose.model("users", User)
+  console.log(`=== ${users}`)
   res.status(200).send(todos);
 });
 
@@ -107,15 +113,15 @@ app.put("/api/updateTodo/:id", async (req, res) => {
   console.log(`required param id : ${id}`);
   console.log(`required body : ${JSON.stringify(body)}`);
   const index = todos.findIndex((item) => item.id == id);
-  console.log(`selected item : ${JSON.stringify(todos[index])}`)
+  console.log(`selected item : ${JSON.stringify(todos[index])}`);
   if (index !== -1) {
-    todos[index] = {...todos[index], ...body};
+    todos[index] = { ...todos[index], ...body };
     res.status(200).send(body);
   }
 });
 
 app.listen(port, async () => {
   console.log(`Port is running in ${port}`);
-  // console.log(`connecting DB : ${MongoURL}`);
-  // await connectDatabase();
+  console.log(`connecting DB : ${MongoURL}`);
+  await connectDatabase();
 });
